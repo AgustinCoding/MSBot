@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSbot - 2° MS</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MSbot</h1>
+            <p>Asistente virtual para el grupo 2° MS</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="bot-section">Chatear con MSbot</button>
+            <button class="tab-button" data-tab="reminder-section">Recordatorios</button>
+        </nav>
+
+        <main>
+            <!-- Seccion de interaccion con el bot -->
+            <section id="bot-section" class="section active">
+                <h2>Pregunta lo que necesites</h2>
+                <div class="chat-container">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="message bot-message">
+                            <p>¡Hola! Soy MSbot, tu asistente para el grupo 2° MS. ¿En qué puedo ayudarte hoy?</p>
+                            <p class="message-note">Tus preguntas serán respondidas directamente en el grupo de WhatsApp.</p>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <form id="message-form">
+                            <input type="text" id="user-message" placeholder="Escribe tu pregunta aquí" required>
+                            <button type="submit" id="send-button">Enviar</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seccion de recordatorios -->
+            <section id="reminder-section" class="section">
+                <h2>Recordatorios de materias</h2>
+                <div class="reminder-container">
+                    <form id="reminder-form">
+                        <div class="form-group">
+                            <label for="subject">Materia:</label>
+                            <select id="subject" required>
+                                <option value="" disabled selected>Selecciona una materia</option>
+                                <!-- Las opciones se cargan dinámicamente desde JavaScript -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reminder-description">Descripción:</label>
+                            <input type="text" id="reminder-description" placeholder="Ej: Entrega de tarea de Matemáticas" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reminder-datetime">Fecha y hora:</label>
+                            <input type="datetime-local" id="reminder-datetime" required>
+                        </div>
+                        <button type="submit" id="add-reminder-button">Agregar recordatorio</button>
+                    </form>
+
+                    <div class="reminder-list-container">
+                        <h3>Tus próximos recordatorios</h3>
+                        <ul id="reminders-list" class="reminders-list">
+                            <!-- Los recordatorios se mostraran aquí -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="notification" class="notification hidden">
+            <p id="notification-message"></p>
+            <button id="close-notification">×</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
