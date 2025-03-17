@@ -1,26 +1,79 @@
 // Datos de materias y horarios (estaticos)
 const horariosMaterias = {
-    "Matemáticas": { dia: "Lunes", hora: "10:00 AM" },
-    "Física": { dia: "Miércoles", hora: "09:00 AM" },
-    "Inglés": { dia: "Martes", hora: "11:00 AM" },
-    "Historia": { dia: "Jueves", hora: "02:00 PM" },
-    "Biología": { dia: "Viernes", hora: "08:00 AM" },
-    "Química": { dia: "Lunes", hora: "12:00 PM" },
-    "Literatura": { dia: "Martes", hora: "09:00 AM" }
+    "SISTEMAS OPERATIVOS": [
+        { dia: "Miércoles", hora: "12:25 PM", salon: "107", profesor: "Dall'oglio, Pamela" },
+        { dia: "Miércoles", hora: "13:55 PM", salon: "Laboratorio 3", profesor: "Dall'oglio, Pamela" }
+    ],
+    "LEGISLACIÓN": { dia: "Jueves", hora: "12:25 PM", salon: "EP2", profesor: "Suárez, Agustina" },
+    "HISTORIA ECONÓMICA": { dia: "Viernes", hora: "12:25 PM", salon: "206", profesor: "Varela, Alicia" },
+    "ANÁLISIS Y PRODUCCIÓN DE TEXTOS": [
+        { dia: "Lunes", hora: "13:10 PM", salon: "202", profesor: "Martínez, Mónica" },
+        { dia: "Viernes", hora: "14:40 PM", salon: "206", profesor: "Martínez, Mónica" }
+    ],
+    "PROGRAMACIÓN AVANZADA": { dia: "Martes", hora: "13:55 PM", salon: "Laboratorio 1", profesor: "De león, Jorge" },
+    "MATEMÁTICA": [
+        { dia: "Jueves", hora: "13:55 PM", salon: "205", profesor: "Flores, Luis" },
+        { dia: "Viernes", hora: "15:35 PM", salon: "205", profesor: "Flores, Luis" }
+    ],
+    "MATEMÁTICA CTS": { dia: "Lunes", hora: "15:35 PM", salon: "202", profesor: "Antunez, Jorge" },
+    "INGLÉS": [
+        { dia: "Jueves", hora: "15:35 PM", salon: "205", profesor: "Mujica, Lourdes" },
+        { dia: "Viernes", hora: "17:05 PM", salon: "206", profesor: "Mujica, Lourdes" }
+    ],
+    "REDES INFORMÁTICAS": { dia: "Martes", hora: "16:20 PM", salon: "Taller TMII", profesor: "Zunin Leonardo" },
+    "INTRODUCCIÓN BASE DE DATOS": { dia: "Miércoles", hora: "16:20 PM", salon: "Laboratorio 3", profesor: "Dall'oglio, Pamela" },
+    "AC VIDEOJUEGOS": { dia: "Lunes", hora: "17:05 PM", salon: "Laboratorio 2", profesor: "" }
 };
 
-// Llenar el selector de materias
+// funcion para ejecutar cuando el documento este cargado
 document.addEventListener('DOMContentLoaded', function() {
+    // Llenar el selector de materias
+    fillSubjectSelect();
+    
+    // Configurar eventos para el formulario de mensajes
+    setupMessageForm();
+    
+    // Configurar eventos para el formulario de recordatorios
+    setupReminderForm();
+    
+    // Configurar sistema de notificaciones
+    setupNotifications();
+    
+    // Cargar recordatorios existentes
+    loadExistingReminders();
+    
+    // Configurar navegacion por pestañas
+    setupTabNavigation();
+});
+
+// Llenar el selector de materias
+function fillSubjectSelect() {
     const subjectSelect = document.getElementById('subject');
     
     for (const materia in horariosMaterias) {
         const option = document.createElement('option');
         option.value = materia;
-        option.textContent = `${materia} (${horariosMaterias[materia].dia}, ${horariosMaterias[materia].hora})`;
+        
+        if (Array.isArray(horariosMaterias[materia])) {
+            // Para materias con múltiples horarios
+            let infoText = `${materia} (`;
+            horariosMaterias[materia].forEach((horario, index) => {
+                infoText += `${horario.dia} ${horario.hora}, Salón ${horario.salon}`;
+                if (index < horariosMaterias[materia].length - 1) infoText += " | ";
+            });
+            infoText += ")";
+            option.textContent = infoText;
+        } else {
+            // Para materias con un solo horario
+            option.textContent = `${materia} (${horariosMaterias[materia].dia}, ${horariosMaterias[materia].hora}, Salón ${horariosMaterias[materia].salon})`;
+        }
+        
         subjectSelect.appendChild(option);
     }
+}
 
-    // Navegacion por pestañas
+// Configurar navegacion por pestañas
+function setupTabNavigation() {
     const tabButtons = document.querySelectorAll('.tab-button');
     const sections = document.querySelectorAll('.section');
 
@@ -37,8 +90,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById(tabId).classList.add('active');
         });
     });
+}
 
-    // Manejo del formulario de mensajes
+// Configurar formulario de mensajes
+function setupMessageForm() {
     const messageForm = document.getElementById('message-form');
     const chatMessages = document.getElementById('chat-messages');
     const userMessageInput = document.getElementById('user-message');
@@ -78,26 +133,28 @@ document.addEventListener('DOMContentLoaded', function() {
             userMessageInput.value = '';
         }
     });
+}
 
-    // Funcion para agregar mensajes al chat
-    function addMessage(text, className) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${className}`;
-        
-        const messagePara = document.createElement('p');
-        messagePara.textContent = text;
-        
-        messageDiv.appendChild(messagePara);
-        chatMessages.appendChild(messageDiv);
-        
-        // Auto-scroll al ultimo mensaje
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+// Funcion para agregar mensajes al chat
+function addMessage(text, className) {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${className}`;
+    
+    const messagePara = document.createElement('p');
+    messagePara.textContent = text;
+    
+    messageDiv.appendChild(messagePara);
+    chatMessages.appendChild(messageDiv);
+    
+    // Auto-scroll al ultimo mensaje
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-    // Manejo del formulario de recordatorios
+// Configurar formulario de recordatorios
+function setupReminderForm() {
     const reminderForm = document.getElementById('reminder-form');
-    const remindersList = document.getElementById('reminders-list');
-
+    
     reminderForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -138,88 +195,96 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+}
 
-    // Funcion para agregar recordatorios
-    function addReminder(subject, description, datetime) {
-        const reminderItem = document.createElement('li');
-        reminderItem.className = 'reminder-item';
-        
-        const date = new Date(datetime);
-        const formattedDate = date.toLocaleDateString('es-ES', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        reminderItem.innerHTML = `
-            <div class="reminder-content">
-                <h4>${subject}</h4>
-                <p>${description}</p>
-                <p class="reminder-date">${formattedDate}</p>
-            </div>
-            <button class="delete-reminder" data-datetime="${datetime}">×</button>
-        `;
-        
-        // Agregar evento para eliminar el recordatorio
-        const deleteButton = reminderItem.querySelector('.delete-reminder');
-        deleteButton.addEventListener('click', function() {
-            const reminderDatetime = this.getAttribute('data-datetime');
-            
-            // Eliminar el recordatorio del backend
-            fetch('/delete_reminder', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    subject: subject,
-                    datetime: reminderDatetime 
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Reminder deleted:', data);
-                reminderItem.remove();
-                showNotification('Recordatorio eliminado');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('Error al eliminar el recordatorio', true);
-            });
-        });
-        
-        remindersList.appendChild(reminderItem);
-    }
-
-    // Sistema de notificaciones
-    const notification = document.getElementById('notification');
-    const notificationMessage = document.getElementById('notification-message');
-    const closeNotification = document.getElementById('close-notification');
+// Funcion para agregar recordatorios
+function addReminder(subject, description, datetime) {
+    const remindersList = document.getElementById('reminders-list');
+    const reminderItem = document.createElement('li');
+    reminderItem.className = 'reminder-item';
     
-    function showNotification(message, isError = false) {
-        notificationMessage.textContent = message;
-        notification.classList.remove('hidden');
+    const date = new Date(datetime);
+    const formattedDate = date.toLocaleDateString('es-ES', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    reminderItem.innerHTML = `
+        <div class="reminder-content">
+            <h4>${subject}</h4>
+            <p>${description}</p>
+            <p class="reminder-date">${formattedDate}</p>
+        </div>
+        <button class="delete-reminder" data-datetime="${datetime}">×</button>
+    `;
+    
+    // Agregar evento para eliminar el recordatorio
+    const deleteButton = reminderItem.querySelector('.delete-reminder');
+    deleteButton.addEventListener('click', function() {
+        const reminderDatetime = this.getAttribute('data-datetime');
         
-        if (isError) {
-            notification.classList.add('error');
-        } else {
-            notification.classList.remove('error');
-        }
-        
-        // Ocultar automaticamente despues de 3 segundos
-        setTimeout(() => {
-            notification.classList.add('hidden');
-        }, 3000);
-    }
+        // Eliminar el recordatorio del backend
+        fetch('/delete_reminder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                subject: subject,
+                datetime: reminderDatetime 
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Reminder deleted:', data);
+            reminderItem.remove();
+            showNotification('Recordatorio eliminado');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error al eliminar el recordatorio', true);
+        });
+    });
+    
+    remindersList.appendChild(reminderItem);
+}
+
+// Configurar sistema de notificaciones
+function setupNotifications() {
+    const notification = document.getElementById('notification');
+    const closeNotification = document.getElementById('close-notification');
     
     closeNotification.addEventListener('click', function() {
         notification.classList.add('hidden');
     });
+}
+
+// Funcion para mostrar notificaciones
+function showNotification(message, isError = false) {
+    const notification = document.getElementById('notification');
+    const notificationMessage = document.getElementById('notification-message');
     
-    // Cargar recordatorios existentes al iniciar
+    notificationMessage.textContent = message;
+    notification.classList.remove('hidden');
+    
+    if (isError) {
+        notification.classList.add('error');
+    } else {
+        notification.classList.remove('error');
+    }
+    
+    // Ocultar automaticamente despues de 3 segundos
+    setTimeout(() => {
+        notification.classList.add('hidden');
+    }, 3000);
+}
+
+// Cargar recordatorios existentes
+function loadExistingReminders() {
     fetch('/get_reminders')
         .then(response => response.json())
         .then(data => {
@@ -233,4 +298,4 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error loading reminders:', error);
         });
-});
+}
