@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import json
 import os
+from whatsappHook import Whatsapp #TODO: Implementar la clase Whatsapp al backend
 
 
 
