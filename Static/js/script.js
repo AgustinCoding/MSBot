@@ -1,5 +1,4 @@
-
-// Datos de materias y horarios (estáticos)
+// Datos de materias y horarios (estaticos)
 const horariosMaterias = {
     "Matemáticas": { dia: "Lunes", hora: "10:00 AM" },
     "Física": { dia: "Miércoles", hora: "09:00 AM" },
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         subjectSelect.appendChild(option);
     }
 
-    // Navegación por pestañas
+    // Navegacion por pestañas
     const tabButtons = document.querySelectorAll('.tab-button');
     const sections = document.querySelectorAll('.section');
 
@@ -33,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tabButtons.forEach(btn => btn.classList.remove('active'));
             sections.forEach(section => section.classList.remove('active'));
             
-            // Activar la pestaña y sección seleccionada
+            // Activar la pestaña y seccion seleccionada
             button.classList.add('active');
             document.getElementById(tabId).classList.add('active');
         });
@@ -52,25 +51,35 @@ document.addEventListener('DOMContentLoaded', function() {
             // Agregar mensaje del usuario al chat
             addMessage(userMessage, 'user-message');
             
-            // Aquí enviaríamos la pregunta a un backend para procesarla
-            // y enviarla al grupo de WhatsApp
-            // En un caso real, esta parte sería una llamada AJAX a tu backend
-            
-            // Simulamos la confirmación de envío
-            setTimeout(() => {
-                // Mensaje de confirmación
+            // Enviar mensaje al backend Flask usando fetch
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                
+                // Mensaje de confirmacion
                 const confirmationMessage = "Tu pregunta ha sido enviada y será respondida en el grupo de WhatsApp de 2° MS con el formato: \"Nueva consulta: " + userMessage + "; [respuesta]\"";
                 
                 addMessage(confirmationMessage, 'bot-message');
                 showNotification('Pregunta enviada al grupo de WhatsApp');
-            }, 1000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error al enviar la pregunta', true);
+            });
             
             // Limpiar el campo de entrada
             userMessageInput.value = '';
         }
     });
 
-    // Función para agregar mensajes al chat
+    // Funcion para agregar mensajes al chat
     function addMessage(text, className) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${className}`;
@@ -81,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.appendChild(messagePara);
         chatMessages.appendChild(messageDiv);
         
-        // Auto-scroll al último mensaje
+        // Auto-scroll al ultimo mensaje
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
@@ -97,19 +106,40 @@ document.addEventListener('DOMContentLoaded', function() {
         const datetime = document.getElementById('reminder-datetime').value;
         
         if (subject && description && datetime) {
-            // Crear y agregar el recordatorio a la lista
-            addReminder(subject, description, datetime);
-            
-            // Mostrar notificación
-            showNotification('Recordatorio agregado con éxito');
-            
-            // Limpiar el formulario
-            document.getElementById('reminder-description').value = '';
-            document.getElementById('reminder-datetime').value = '';
+            // Enviar recordatorio al backend Flask
+            fetch('/add_reminder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    subject: subject,
+                    description: description, 
+                    datetime: datetime 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Reminder added:', data);
+                
+                // Crear y agregar el recordatorio a la lista
+                addReminder(subject, description, datetime);
+                
+                // Mostrar notificación
+                showNotification('Recordatorio agregado con éxito');
+                
+                // Limpiar el formulario
+                document.getElementById('reminder-description').value = '';
+                document.getElementById('reminder-datetime').value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error al agregar el recordatorio', true);
+            });
         }
     });
 
-    // Función para agregar recordatorios
+    // Funcion para agregar recordatorios
     function addReminder(subject, description, datetime) {
         const reminderItem = document.createElement('li');
         reminderItem.className = 'reminder-item';
@@ -130,20 +160,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>${description}</p>
                 <p class="reminder-date">${formattedDate}</p>
             </div>
-            <button class="delete-reminder">×</button>
+            <button class="delete-reminder" data-datetime="${datetime}">×</button>
         `;
         
         // Agregar evento para eliminar el recordatorio
         const deleteButton = reminderItem.querySelector('.delete-reminder');
         deleteButton.addEventListener('click', function() {
-            reminderItem.remove();
-            showNotification('Recordatorio eliminado');
+            const reminderDatetime = this.getAttribute('data-datetime');
+            
+            // Eliminar el recordatorio del backend
+            fetch('/delete_reminder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    subject: subject,
+                    datetime: reminderDatetime 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Reminder deleted:', data);
+                reminderItem.remove();
+                showNotification('Recordatorio eliminado');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error al eliminar el recordatorio', true);
+            });
         });
         
         remindersList.appendChild(reminderItem);
-        
-        // En un caso real, aquí iría la lógica para programar el envío al WhatsApp
-        // simulateWhatsAppReminder(subject, description, datetime);
     }
 
     // Sistema de notificaciones
@@ -151,11 +199,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const notificationMessage = document.getElementById('notification-message');
     const closeNotification = document.getElementById('close-notification');
     
-    function showNotification(message) {
+    function showNotification(message, isError = false) {
         notificationMessage.textContent = message;
         notification.classList.remove('hidden');
         
-        // Ocultar automáticamente después de 3 segundos
+        if (isError) {
+            notification.classList.add('error');
+        } else {
+            notification.classList.remove('error');
+        }
+        
+        // Ocultar automaticamente despues de 3 segundos
         setTimeout(() => {
             notification.classList.add('hidden');
         }, 3000);
@@ -164,4 +218,19 @@ document.addEventListener('DOMContentLoaded', function() {
     closeNotification.addEventListener('click', function() {
         notification.classList.add('hidden');
     });
+    
+    // Cargar recordatorios existentes al iniciar
+    fetch('/get_reminders')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Reminders loaded:', data);
+            if (data.reminders && data.reminders.length > 0) {
+                data.reminders.forEach(reminder => {
+                    addReminder(reminder.subject, reminder.description, reminder.datetime);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading reminders:', error);
+        });
 });
