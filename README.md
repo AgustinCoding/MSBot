@@ -26,20 +26,6 @@ MSBot es un asistente virtual diseñado específicamente para el grupo de clase 
 - **IA**: Gemini API para generación de respuestas
 - **Mensajería**: Integración con WhatsApp
 
-## Estructura del Proyecto
-```
-msbot/
-├── backend/
-│   ├── app.py             # Aplicación principal Flask
-│   ├── whatsapphook.py    # Clase para integración con WhatsApp
-│   ├── gptmodel.py        # Clase para integración con Gemini API
-│   └── reminders.json     # Almacenamiento de recordatorios
-├── templates/
-│   └── index.html         # Plantilla principal
-└── static/
-    ├── css/               # Estilos
-    └── js/                # Scripts JavaScript
-```
 
 ## Instalación y Configuración
 
