@@ -1,7 +1,7 @@
 # MSBot - Asistente Virtual para 2° MS
 
 <p align="center">
-  <img src="ruta/a/tu/imagen/msbot-logo.png" alt="MSBot Logo" width="300">
+  <img src="Static/imgs/img.png" alt="MSBot Logo" width="300">
 </p>
 
 ## Descripción
