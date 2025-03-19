@@ -2,12 +2,15 @@ from flask import Flask, render_template, request, jsonify
 import json
 import os
 import time
-from whatsappHook import Whatsapp  # TODO: Implementar la clase Whatsapp al backend
+from whatsapphook import Whatsapp  # TODO: Implementar la clase Whatsapp al backend
+from gptmodel import GPTmodel
 
-ACTUAL_MESSAGE = ""
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
 wppHandler = Whatsapp()
+gpt = GPTmodel(api="AIzaSyDNAOdKegeCp_RQU7DVZs83XNtazj8iO44")
+
+
 
 @app.route('/')
 def index():
@@ -20,9 +23,16 @@ def send_message():
     data = request.get_json()
     print(f"Datos recibidos: {data}")
     user_message = data.get('message', '')
-    
-    # Aqui ira la funcion para responder al usuario por whatsapp
-    wppHandler.send_message(f"Mensaje enviado desde el server: {user_message}")
+
+    try:
+        response = gpt.generate_response(user_prompt=user_message)
+
+        wppHandler.send_message(f"""NUEVA SOLICITUD: {user_message}
+    ------------------------------------------
+    MSBot: {response}
+    """)
+    except Exception as e:
+        print(f"Error al citar al modelo: {e}")
     
     # Devolver una respuesta
     print("Devolviendo respuesta JSON")
