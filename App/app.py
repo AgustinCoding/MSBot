@@ -12,6 +12,8 @@ gpt = GPTmodel(api="AIzaSyDNAOdKegeCp_RQU7DVZs83XNtazj8iO44")
 
 
 
+
+
 @app.route('/')
 def index():
     print("Accediendo a la ruta '/'")
@@ -39,27 +41,61 @@ def send_message():
     return jsonify({"status": "success", "message": "Mensaje recibido"})
 
 # Para gestionar recordatorios
+def save_reminders(reminders):
+    print("Guardando recordatorios...")
+    with open('reminders.json', 'w') as f:
+        json.dump(reminders, f)
+    print("Recordatorios guardados")
+
+
+
+
 def load_reminders():
     print("Cargando recordatorios...")
-    if os.path.exists('./reminders.json'):
-        print("El archivo reminders.json existe")
-        with open('./reminders.json', 'r') as f:
+
+    # Obtener la ruta absoluta del archivo JSON
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(base_dir, "reminders.json")  
+
+    if os.path.exists(file_path):
+        print(f"El archivo {file_path} existe.")
+        with open(file_path, "r", encoding="utf-8") as f:
             try:
                 reminders = json.load(f)
+                format_date()
                 print(f"Recordatorios cargados: {reminders}")
                 return reminders
             except Exception as e:
                 print(f"Error al cargar reminders.json: {e}")
                 return []
     else:
-        print("El archivo reminders.json no existe")
-    return []
+        print(f"El archivo {file_path} no existe.")
+        return []
+    
+def format_date():
 
-def save_reminders(reminders):
-    print("Guardando recordatorios...")
-    with open('./reminders.json', 'w') as f:
-        json.dump(reminders, f)
-    print("Recordatorios guardados")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(base_dir, "reminders.json")  
+
+    if os.path.exists(file_path):
+        print("Reminders.json encontrado para formatear")
+        try:
+            with open(file_path, "r", encoding="UTF-8") as f:
+                reminders = json.load(f)
+
+            for reminder in reminders:
+                if 'datetime' in reminder:
+                    reminder['datetime'] = reminder['datetime'].replace("T", " ")
+
+            with open(file_path, "w", encoding= "UTF-8") as f:
+                json.dump(reminders, f, indent=2)
+                print("JSON Formateado correctamente")
+        except:
+            print("Error al formatear archivo")
+    else:
+        print("Archivo no encontrado")
+
+    
 
 @app.route('/add_reminder', methods=['POST'])
 def add_reminder():
@@ -102,28 +138,21 @@ def get_reminders():
     print(f"Recordatorios obtenidos: {reminders}")
     return jsonify({"status": "success", "reminders": reminders})
 
+@app.route('/send_reminders')
+def send_reminders():
+    reminder_message = f"--------RECORDATORIOS----------"
+    try:
+        reminders = load_reminders()
+        x=1
+        for reminder in reminders:
+            reminder_message+= f"\n{x}-{reminder['subject']} : {reminder['description']} | Vence: {reminder['datetime']}\n"
+            x+=1
+
+        print(reminder_message)
+    except:
+        print("No hay recordatorios")
+
+
 if __name__ == '__main__':
-    print("Iniciando la aplicación...")
-    try:
-        print("Intentando iniciar sesión en WhatsApp...")
-        wppHandler.login()
-    except Exception as e:
-        print(f"Error al iniciar sesión en WhatsApp: {e}")
-    
-    while wppHandler.is_logged_in != True:
-        print("Esperando a que el usuario inicie sesión en WhatsApp...")
-        time.sleep(1)
-
-    time.sleep(2)
-    
-    try:
-        print("Abriendo grupo..")
-        wppHandler.openGroup("2° MS anti-dictadura")
-    except Exception as e:
-        print(f"Error al abrir el grupo: {e}")
-
-    try:
-        print("Iniciando el servidor Flask...")
-        app.run()
-    except Exception as e:
-        print(f"Error al iniciar el servidor Flask: {e}")
+    load_reminders()
+    time.sleep(40)

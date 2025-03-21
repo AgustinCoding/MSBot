@@ -4,24 +4,24 @@ const horariosMaterias = {
         { dia: "Miércoles", hora: "12:25 PM", salon: "107", profesor: "Dall'oglio, Pamela" },
         { dia: "Miércoles", hora: "13:55 PM", salon: "Laboratorio 3", profesor: "Dall'oglio, Pamela" }
     ],
-    "LEGISLACIÓN": { dia: "Jueves", hora: "12:25 PM", salon: "EP2", profesor: "Suárez, Agustina" },
-    "HISTORIA ECONÓMICA": { dia: "Viernes", hora: "12:25 PM", salon: "206", profesor: "Varela, Alicia" },
-    "ANÁLISIS Y PRODUCCIÓN DE TEXTOS": [
+    "LEGISLACION": { dia: "Jueves", hora: "12:25 PM", salon: "EP2", profesor: "Suárez, Agustina" },
+    "HISTORIA ECONOMICA": { dia: "Viernes", hora: "12:25 PM", salon: "206", profesor: "Varela, Alicia" },
+    "ANÁLISIS Y PRODUCCION DE TEXTOS": [
         { dia: "Lunes", hora: "13:10 PM", salon: "202", profesor: "Martínez, Mónica" },
         { dia: "Viernes", hora: "14:40 PM", salon: "206", profesor: "Martínez, Mónica" }
     ],
-    "PROGRAMACIÓN AVANZADA": { dia: "Martes", hora: "13:55 PM", salon: "Laboratorio 1", profesor: "De león, Jorge" },
-    "MATEMÁTICA": [
+    "PROGRAMACION AVANZADA": { dia: "Martes", hora: "13:55 PM", salon: "Laboratorio 1", profesor: "De león, Jorge" },
+    "MATEMATICA": [
         { dia: "Jueves", hora: "13:55 PM", salon: "205", profesor: "Flores, Luis" },
         { dia: "Viernes", hora: "15:35 PM", salon: "205", profesor: "Flores, Luis" }
     ],
-    "MATEMÁTICA CTS": { dia: "Lunes", hora: "15:35 PM", salon: "202", profesor: "Antunez, Jorge" },
-    "INGLÉS": [
+    "MATEMATICA CTS": { dia: "Lunes", hora: "15:35 PM", salon: "202", profesor: "Antunez, Jorge" },
+    "INGLES": [
         { dia: "Jueves", hora: "15:35 PM", salon: "205", profesor: "Mujica, Lourdes" },
         { dia: "Viernes", hora: "17:05 PM", salon: "206", profesor: "Mujica, Lourdes" }
     ],
-    "REDES INFORMÁTICAS": { dia: "Martes", hora: "16:20 PM", salon: "Taller TMII", profesor: "Zunin Leonardo" },
-    "INTRODUCCIÓN BASE DE DATOS": { dia: "Miércoles", hora: "16:20 PM", salon: "Laboratorio 3", profesor: "Dall'oglio, Pamela" },
+    "REDES INFORMATICAS": { dia: "Martes", hora: "16:20 PM", salon: "Taller TMII", profesor: "Zunin Leonardo" },
+    "INTRODUCCION BASE DE DATOS": { dia: "Miércoles", hora: "16:20 PM", salon: "Laboratorio 3", profesor: "Dall'oglio, Pamela" },
     "AC VIDEOJUEGOS": { dia: "Lunes", hora: "17:05 PM", salon: "Laboratorio 2", profesor: "" }
 };
 
