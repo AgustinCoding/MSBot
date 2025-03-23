@@ -81,11 +81,12 @@ MSBot es un asistente virtual diseñado específicamente para el grupo de clase 
 - ✅ Funcionalidad de chat implementada
 - ✅ Integración con WhatsApp
 - ✅ Estructura para recordatorios
-- 🔄 Implementación completa de recordatorios (en desarrollo)
+- ✅ Implementación completa de recordatorios (en desarrollo)
 
 ## Próximas Mejoras
-- Finalizar implementación de recordatorios
 - Incorporar recursos compartidos para la clase
+- Soporte de image to text en chat
+- Mejoras en la UI para opciones extra
 
 ## Contribuciones
 Las contribuciones son bienvenidas. Por favor, seguir estos pasos:
