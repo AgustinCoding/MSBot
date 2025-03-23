@@ -1,16 +1,17 @@
 from flask import Flask, render_template, request, jsonify
+from apscheduler.schedulers.background import BackgroundScheduler
 import json
 import os
+import atexit
 import time
-from whatsapphook import Whatsapp  # TODO: Implementar la clase Whatsapp al backend
+from whatsapphook import Whatsapp 
 from gptmodel import GPTmodel
 
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
 wppHandler = Whatsapp()
 gpt = GPTmodel(api="AIzaSyDNAOdKegeCp_RQU7DVZs83XNtazj8iO44")
-
-
+scheduler = BackgroundScheduler()
 
 
 
@@ -48,7 +49,12 @@ def save_reminders(reminders):
     print("Recordatorios guardados")
 
 
-
+def schedule_reminders():
+    print("Enviando recordatorios")
+    try:
+        send_reminders()
+    except Exception as e:
+        print("Error al enviar recordatorios", e)
 
 def load_reminders():
     print("Cargando recordatorios...")
@@ -149,10 +155,42 @@ def send_reminders():
             x+=1
 
         print(reminder_message)
+        try:
+            wppHandler.send_message(reminder_message)
+        except:
+            print("Mensaje no enviado")
     except:
         print("No hay recordatorios")
 
 
+scheduler.add_job(schedule_reminders, 'interval', hours=3)
+scheduler.start()
+
+atexit.register(lambda: scheduler.shutdown(wait=False))
+
 if __name__ == '__main__':
-    load_reminders()
-    time.sleep(40)
+    print("Iniciando la aplicación...")
+    try:
+        print("Intentando iniciar sesión en WhatsApp...")
+        wppHandler.login()
+    except Exception as e:
+        print(f"Error al iniciar sesión en WhatsApp: {e}")
+    
+    while wppHandler.is_logged_in != True:
+        print("Esperando a que el usuario inicie sesión en WhatsApp...")
+        time.sleep(1)
+
+    time.sleep(2)
+    
+    try:
+        print("Abriendo grupo..")
+        wppHandler.openGroup("2° MS anti-dictadura")
+    except Exception as e:
+        print(f"Error al abrir el grupo: {e}")
+
+
+    try:
+        print("Iniciando el servidor Flask...")
+        app.run()
+    except Exception as e:
+        print(f"Error al iniciar el servidor Flask: {e}")
